@@ -8,15 +8,34 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
       - name: Setup NodeJS
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
+      - name: Create Clean Web Directory
+        run: |
+          mkdir -p www_dist
+          # Agar files bahaar hain toh unhe copy karein
+          cp -r * www_dist/ 2>/dev/null || true
+          rm -rf www_dist/www_dist www_dist/.github
+          # Agar index.html kisi folder ke andar hai toh use bahaar nikaalein
+          INNER_DIR=$(find . -maxdepth 2 -name "index.html" -not -path "./www_dist/*" | head -n 1 | sed 's|/[^/]*$||')
+          if [ ! -z "$INNER_DIR" ] && [ "$INNER_DIR" != "." ]; then
+            cp -r $INNER_DIR/* www_dist/
+          fi
+          echo '{"name": "myapp", "version": "1.0.0"}' > package.json
+
       - name: Build APK without Watermark
         run: |
           npm install @capacitor/core @capacitor/cli
-          npx cap init "MyAwesomeApp" "com.mycleanapp.view" --web-dir=.
+          npx cap init "MusicPlayer" "com.music.player" --web-dir=www_dist
           npm install @capacitor/android
           npx cap add android
           npx cap sync
