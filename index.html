@@ -1,0 +1,103 @@
+import React, { useState } from 'react';
+import { Play, Pause, SkipForward, SkipBack, Search, Music, ListMusic, Heart, Plus, Library } from 'lucide-react';
+
+const songsData = [
+  { id: 1, title: "Midnight Echoes", artist: "Nova Drift", time: "03:04", color: "bg-purple-500" },
+  { id: 2, title: "Tears on Vinyl", artist: "Luna Ash", time: "06:22", color: "bg-emerald-500" },
+  { id: 3, title: "Dust & Daydreams", artist: "Elias North", time: "02:59", color: "bg-amber-500" },
+  { id: 4, title: "Golden Horizon", artist: "Lyra Vale", time: "02:56", color: "bg-indigo-500" },
+];
+
+const playlistsData = [
+  { id: 1, title: "Favourite", count: "1 song", icon: <Heart className="w-6 h-6 text-pink-500" />, bg: "bg-white" },
+  { id: 2, title: "Recently Added", count: "193 songs", icon: <Music className="w-6 h-6 text-emerald-500" />, bg: "bg-white" },
+  { id: 3, title: "Most played", count: "22 songs", icon: <ListMusic className="w-6 h-6 text-indigo-500" />, bg: "bg-white" },
+  { id: 4, title: "Playlists 1", count: "7 songs", icon: null, image: "bg-emerald-500", bg: "bg-emerald-500" },
+  { id: 5, title: "Playlists 2", count: "5 songs", icon: null, image: "bg-indigo-500", bg: "bg-indigo-500" },
+];
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('SONGS');
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const renderSongs = () => (
+    <div className="flex-1 overflow-y-auto px-6 pb-24">
+      {songsData.map((song) => (
+        <div key={song.id} className="flex items-center gap-4 mb-5 group hover:bg-white/5 p-2 rounded-xl transition-all cursor-pointer">
+          <div className={`${song.color} w-12 h-12 rounded-xl flex items-center justify-center shadow-lg`}>
+            <Music size={20} className="text-white" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-sm font-semibold text-white">{song.title}</h3>
+            <p className="text-[10px] text-slate-400 font-medium">{song.artist} • {song.time}</p>
+          </div>
+          <div className="text-slate-500 text-lg hover:text-white transition-colors">⋮</div>
+        </div>
+      ))}
+    </div>
+  );
+
+  const renderPlaylists = () => (
+    <div className="flex-1 overflow-y-auto px-6 pb-24 space-y-4">
+      <div className="flex justify-end items-center mb-4 gap-4">
+        <Plus size={20} className="text-white cursor-pointer" />
+        <Library size={20} className="text-white cursor-pointer" />
+      </div>
+      {playlistsData.map((pl) => (
+        <div key={pl.id} className="flex items-center gap-4 group p-2 rounded-xl hover:bg-white/5 transition-all">
+          <div className={`w-14 h-14 rounded-full flex items-center justify-center shadow-lg ${pl.bg}`}>
+            {pl.icon || <div className="w-full h-full rounded-full" />}
+          </div>
+          <div className="flex-1">
+            <h3 className="text-sm font-bold text-white">{pl.title}</h3>
+            <p className="text-[10px] text-slate-400">{pl.count}</p>
+          </div>
+          <div className="text-slate-500">⋮</div>
+        </div>
+      ))}
+    </div>
+  );
+
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-slate-950 p-4 font-sans text-white">
+      <div className="w-full max-w-sm h-[700px] bg-slate-900 rounded-[32px] shadow-2xl border border-slate-800 overflow-hidden flex flex-col relative">
+        <div className="p-6 pb-2">
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center font-bold text-slate-950">P</div>
+              <h1 className="text-xl font-bold">layer</h1>
+            </div>
+            <Search size={20} className="text-slate-400" />
+          </div>
+
+          <div className="flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6 gap-6 overflow-x-auto no-scrollbar">
+            {['SONGS', 'PLAYLISTS', 'ALBUMS', 'ARTISTS', 'FOLDERS'].map((tab) => (
+              <button 
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`pb-2 whitespace-nowrap transition-all ${activeTab === tab ? 'text-orange-400 border-b-2 border-orange-400' : 'hover:text-white'}`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {activeTab === 'PLAYLISTS' ? renderPlaylists() : renderSongs()}
+
+        <div className="absolute bottom-0 left-0 w-full bg-emerald-900/90 backdrop-blur-xl p-4 flex items-center gap-4 border-t border-emerald-800/30">
+          <div className="w-10 h-10 rounded-full bg-emerald-500 animate-spin-slow flex items-center justify-center border-4 border-slate-950"></div>
+          <div className="flex-1">
+            <h4 className="text-sm font-bold truncate">Tears on Vinyl</h4>
+            <p className="text-[10px] text-emerald-200">Luna Ash</p>
+          </div>
+          <div className="flex gap-4">
+            <SkipBack size={18} />
+            <button onClick={() => setIsPlaying(!isPlaying)}>{isPlaying ? <Pause size={18} /> : <Play size={18} />}</button>
+            <SkipForward size={18} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
